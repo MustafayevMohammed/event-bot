@@ -73,7 +73,7 @@ def receive_info(update: Update, context: CallbackContext):
             age = int(info[0])
             first_name = str(info[1])
             last_name = str(info[2])
-            context.user_data[age] = (first_name, last_name)
+            context.user_data['user_data'] = (first_name, last_name, age)
 
             # Quote the information in the reply
             reply_text = f'Yasiniz: {info[0]}, Adiniz: {info[1]} ve soyadiniz {info[2]} Olaraq qeyd edildi'

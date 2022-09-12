@@ -12,3 +12,4 @@ sqlparse==0.4.2
 tornado==6.2
 tzdata==2022.2
 tzlocal==4.2
+pillow==9.2.0
