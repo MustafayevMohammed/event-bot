@@ -1,10 +1,11 @@
 from tracemalloc import Filter
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler, CallbackContext, CallbackQueryHandler, MessageHandler, Filters
 import os 
 import logging
 import re
-
+import requests
+import json
 
 logging.basicConfig(
 
@@ -29,6 +30,8 @@ def menus(update: Update, context: CallbackContext):
         # )
         return register(update, context)
 
+    if choose == "events":
+        return events(update, context)
 
 def choices(update: Update, context: CallbackContext):
     verbose_text = ""
@@ -36,6 +39,7 @@ def choices(update: Update, context: CallbackContext):
     if context.user_data == {}:
         reply_buttons = InlineKeyboardMarkup([
             [InlineKeyboardButton("register", callback_data="register")],
+            [InlineKeyboardButton("events", callback_data="events")],
         ])
         verbose_text = "Salam Istifadeci. Ne etmek isterdiniz?"
 
@@ -50,6 +54,7 @@ def choices(update: Update, context: CallbackContext):
     return menus
 
 
+INFO_REGEX = r"^Qeydiyyat (.+), (.+), (.+)$"
 def register(update: Update, context: CallbackContext) -> int:
     print(INFO_REGEX,"sa")
     # print(info = re.match(INFO_REGEX, update.message.text).groups())
@@ -59,7 +64,45 @@ def register(update: Update, context: CallbackContext) -> int:
 
     update.callback_query.message.reply_text('\n'.join(reply_list))
 
-INFO_REGEX = r"^Qeydiyyat (.+), (.+), (.+)$"
+
+def events(update: Update, context: CallbackContext):
+    url = "http://localhost:8000/event/api/list-event"
+    response = requests.get(url)
+    # event_list = {}
+    # for count, event in enumerate(response.json()):
+    #     event_list["*Eventin Adi:*"] = event['name']
+    #     event_list["Eventin'in Kecirileceyi Yerin Adresi:"] =  event['event_place_address']
+    # print(json.dumps(response))
+    event_list = []
+    for count, event in enumerate(response.json()):
+        event_list.append(f"*Eventin Adi* 👉🏻: {event['name']}")
+        event_list.append(" ")
+        event_list.append(f"*Eventin'in Kecirileceyi Yerin Adi* 👉🏻: {event['event_place_name']}")
+        event_list.append(f"*Eventin'in Kecirileceyi Yerin Adresi* 👉🏻: {event['event_place_address']}")
+        # print(json.dumps(response.json())[0]["is_entering_price"])
+        # print(a)
+        print(event["entering_price"])
+        if event["is_entering_price"] == True:
+            event_list.append(f"*Eventin'in Giris Qiymeti* 👉🏻: {event['entering_price']} ")
+            print("True")
+        else:
+            event_list.append("*Eventin'in Giris Qiymeti* 👉🏻: Pulsuzdur")
+            print("False")
+        event_list.append("----------------------------------------------------------")
+        event_list.append(" ")
+        
+
+        
+
+
+
+    # for i in event_list:
+    #     print(i)
+    update.callback_query.message.reply_text("*👇🏻Butun Eventler👇🏻: *",parse_mode=ParseMode.MARKDOWN)
+    update.callback_query.message.reply_text('\n'.join(event_list),parse_mode=ParseMode.MARKDOWN)
+    # print(response.json())
+
+
 print(INFO_REGEX)
 def receive_info(update: Update, context: CallbackContext):
     is_acceptable = False

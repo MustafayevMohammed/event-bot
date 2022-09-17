@@ -35,7 +35,7 @@ class EventModel(models.Model):
     event_place_id = models.ForeignKey("event.EventPlaceModel",null=True,blank=False,on_delete=models.SET_NULL)
     people_at_this_event = models.ManyToManyField("event.ParticipantModel")
     name = models.CharField(max_length=300,null=False,blank=False)
-    entering_price = models.DecimalField(max_digits=10, decimal_places=3)
+    entering_price = models.DecimalField(max_digits=10, decimal_places=2)
     is_entering_price = models.BooleanField(default=False)
     starting_time = models.DateTimeField()
     # rating
