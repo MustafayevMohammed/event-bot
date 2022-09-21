@@ -132,6 +132,7 @@ def receive_info(update: Update, context: CallbackContext):
             reply_text
         )
         print(is_acceptable,"b")
+        
 
 print(INFO_REGEX)
 
